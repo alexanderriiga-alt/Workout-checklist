@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- viewport-fit=cover lets content sit behind the iOS notch/status bar -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>LIFT</title>
+
+  <!-- =============================================
+       PWA / iOS HOME SCREEN META TAGS
+  ============================================= -->
+  <!-- Hides Safari browser chrome when launched from home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <!-- Dark translucent status bar to match our theme -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <!-- Name shown under the icon on iOS home screen -->
+  <meta name="apple-mobile-web-app-title" content="LIFT" />
+  <!-- Browser/tab bar color on Android + Safari -->
+  <meta name="theme-color" content="#0d0d12" />
+
+  <!-- Home screen icon: inline SVG encoded as base64 data URI (no external file needed) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjM2IiBmaWxsPSIjMGQwZDEyIi8+PHJlY3QgeD0iMjAiIHk9Ijc4IiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjgiIHJ4PSI0IiBmaWxsPSIjN2VmMGM4IiBvcGFjaXR5PSIwLjMiLz48dGV4dCB4PSI5MCIgeT0iMTE0IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iNjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM3ZWYwYzgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSI2Ij5MSUZUPC90ZXh0Pjwvc3ZnPg==" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjM2IiBmaWxsPSIjMGQwZDEyIi8+PHJlY3QgeD0iMjAiIHk9Ijc4IiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjgiIHJ4PSI0IiBmaWxsPSIjN2VmMGM4IiBvcGFjaXR5PSIwLjMiLz48dGV4dCB4PSI5MCIgeT0iMTE0IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iNjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM3ZWYwYzgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSI2Ij5MSUZUPC90ZXh0Pjwvc3ZnPg==" />
+
+  <!-- Google Fonts: Bebas Neue for headings, DM Sans for body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       CSS CUSTOM PROPERTIES — design tokens
+    ============================================= */
+    :root {
+      --bg:        #0d0d12;       /* deep cool near-black with a blue tint */
+      --surface:   #16161f;       /* cool dark surface */
+      --border:    #272736;       /* cool-toned border */
+      --accent:    #7ef0c8;       /* soft aqua-mint — bright but easy on the eyes */
+      --accent-dk: #4dcba0;
+      --text:      #e8eaf2;       /* cool off-white — less harsh than pure white */
+      --muted:     #6b6e85;       /* cool blue-grey muted text */
+      --danger:    #ff6b7a;       /* softer coral red */
+      --radius:    12px;
+      --tap:       52px;          /* minimum tap-target height */
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      /* max-width keeps it sane on desktop while staying mobile-first */
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* =============================================
+       TOP HEADER
+    ============================================= */
+    header {
+      padding: 20px 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    /* =============================================
+       BOTTOM TAB BAR — primary navigation
+    ============================================= */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 100;
+    }
+
+    nav button {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 12px 0;
+      /* push above iPhone home indicator */
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.15s;
+    }
+
+    nav button .icon { font-size: 1.4rem; }
+
+    nav button.active {
+      color: var(--accent);
+    }
+
+    /* =============================================
+       PAGE LAYOUT — each "screen" is a section
+    ============================================= */
+    main {
+      flex: 1;
+      padding: 16px 20px 90px;
+      /* extra bottom pad for iPhone home indicator */
+      padding-bottom: calc(90px + env(safe-area-inset-bottom));
+      overflow-y: auto;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* =============================================
+       SECTION HEADINGS
+    ============================================= */
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    /* =============================================
+       SHARED INPUT ROW (used on Exercises + Programs pages)
+    ============================================= */
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .add-row input {
+      flex: 1;
+      height: var(--tap);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      padding: 0 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .add-row input:focus { border-color: var(--accent); }
+    .add-row input::placeholder { color: var(--muted); }
+
+    /* Primary action button */
+    .btn-primary {
+      height: var(--tap);
+      padding: 0 18px;
+      background: var(--accent);
+      color: #0a1a14;            /* deep dark text on aqua for contrast */
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary:active { transform: scale(0.96); background: var(--accent-dk); }
+
+    /* Ghost / secondary button */
+    .btn-ghost {
+      height: var(--tap);
+      padding: 0 18px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Danger button */
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      border-radius: var(--radius);
+      padding: 0 18px;
+      height: var(--tap);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-danger:active { background: rgba(255,69,69,0.12); }
+
+    /* =============================================
+       ITEM LIST (exercises + programs share this style)
+    ============================================= */
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .item-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 16px;
+      height: var(--tap);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      animation: slideIn 0.18s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .item-card .item-name {
+      font-size: 1rem;
+      font-weight: 500;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Small delete button inside each card */
+    .btn-delete {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 6px;
+      border-radius: 6px;
+      transition: color 0.12s;
+      flex-shrink: 0;
+    }
+    .btn-delete:hover { color: var(--danger); }
+
+    /* =============================================
+       EMPTY STATE
+    ============================================= */
+    .empty {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .empty span { display: block; font-size: 2.5rem; margin-bottom: 10px; }
+
+    /* =============================================
+       PROGRAMS PAGE — exercise picker modal
+    ============================================= */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 20px 40px;
+      max-height: 80dvh;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: slideUp 0.2s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.06em;
+    }
+
+    .modal-scroll { overflow-y: auto; flex: 1; }
+
+    /* Checkbox list inside modal */
+    .check-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 14px;
+      height: var(--tap);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.12s;
+    }
+    .check-item.selected { border-color: var(--accent); }
+
+    .check-item input[type="checkbox"] {
+      /* hide native checkbox, we draw our own */
+      appearance: none;
+      width: 22px; height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .check-item input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .check-item input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a1a14;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .check-item label {
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions .btn-primary { flex: 1; }
+
+    /* =============================================
+       PROGRAMS PAGE — program card with exercise count
+    ============================================= */
+    .program-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.18s ease;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .program-card:hover { border-color: var(--accent); }
+
+    .program-card .prog-info { flex: 1; min-width: 0; }
+    .program-card .prog-name {
+      font-size: 1rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .program-card .prog-count {
+      font-size: 0.8rem; color: var(--muted); margin-top: 2px;
+    }
+
+    .program-card .prog-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* "Start" tag on program card */
+    .btn-start {
+      background: var(--accent);
+      color: #0a1a14;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.12s, transform 0.1s;
+    }
+    .btn-start:active { transform: scale(0.95); background: var(--accent-dk); }
+
+    /* =============================================
+       WORKOUT VIEW PAGE
+    ============================================= */
+    #page-workout .workout-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    #page-workout .workout-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    /* Workout checklist */
+    .workout-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .exercise-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 16px;
+      min-height: var(--tap);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .exercise-row.done {
+      border-color: var(--accent);
+      background: rgba(232, 255, 62, 0.05);
+    }
+
+    .exercise-row .ex-check {
+      width: 26px; height: 26px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      font-size: 1rem;
+    }
+    .exercise-row.done .ex-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .exercise-row .ex-name {
+      font-size: 1.05rem;
+      font-weight: 500;
+      flex: 1;
+      transition: color 0.15s, text-decoration 0.15s;
+    }
+    .exercise-row.done .ex-name {
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: var(--accent);
+      text-decoration-thickness: 2px;
+    }
+
+    /* Reset button row */
+    .reset-row {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Completed banner */
+    .done-banner {
+      display: none;
+      background: var(--accent);
+      color: #0a1a14;
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      margin-top: 24px;
+      animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .done-banner.show { display: block; }
+    .done-banner strong {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.06em;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* "No workout selected" placeholder */
+    #workout-placeholder {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    #workout-placeholder .big { font-size: 3rem; margin-bottom: 12px; }
+    #workout-placeholder p { font-size: 1rem; line-height: 1.5; }
+
+    /* =============================================
+       RESPONSIVE — tiny quality-of-life on desktop
+    ============================================= */
+    @media (min-width: 500px) {
+      body { border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+      nav { left: 50%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =============================================
+       TOP HEADER
+  ============================================= -->
+  <header>
+    <div class="logo">LIFT</div>
+  </header>
+
+  <!-- =============================================
+       MAIN CONTENT AREA
+       Three pages; only one visible at a time.
+  ============================================= -->
+  <main>
+
+    <!-- PAGE 1: EXERCISES -->
+    <section id="page-exercises" class="page active">
+      <h1 class="page-title">Exercises</h1>
+
+      <div class="add-row">
+        <input type="text" id="exercise-input" placeholder="e.g. Deadlift" maxlength="40" />
+        <button class="btn-primary" onclick="addExercise()">Add</button>
+      </div>
+
+      <div id="exercise-list" class="item-list">
+        <!-- populated by JS -->
+      </div>
+    </section>
+
+    <!-- PAGE 2: PROGRAMS -->
+    <section id="page-programs" class="page">
+      <h1 class="page-title">Programs</h1>
+
+      <div class="add-row">
+        <input type="text" id="program-input" placeholder="e.g. Push Day" maxlength="40" />
+        <button class="btn-primary" onclick="addProgram()">Add</button>
+      </div>
+
+      <div id="program-list" class="item-list">
+        <!-- populated by JS -->
+      </div>
+    </section>
+
+    <!-- PAGE 3: WORKOUT VIEW -->
+    <section id="page-workout" class="page">
+
+      <!-- Shown when no program selected yet -->
+      <div id="workout-placeholder">
+        <div class="big">💪</div>
+        <p>Pick a program from the <strong>Programs</strong> tab to start your workout.</p>
+      </div>
+
+      <!-- Shown when a program is active -->
+      <div id="workout-content" style="display:none">
+        <div class="workout-header">
+          <h1 class="workout-title" id="workout-name"></h1>
+        </div>
+
+        <p class="progress-label" id="progress-label">0 / 0 done</p>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+        </div>
+
+        <div id="workout-list" class="workout-list">
+          <!-- exercise rows injected by JS -->
+        </div>
+
+        <!-- Completed banner appears when all checked -->
+        <div class="done-banner" id="done-banner">
+          <strong>Workout Complete 🎉</strong>
+          Nice work — every exercise done!
+        </div>
+
+        <!-- Reset button -->
+        <div class="reset-row">
+          <button class="btn-danger" onclick="resetWorkout()">↺ Reset Workout</button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- =============================================
+       BOTTOM NAVIGATION
+  ============================================= -->
+  <nav>
+    <button class="active" onclick="showPage('exercises', this)">
+      <span class="icon">🏋️</span>Exercises
+    </button>
+    <button onclick="showPage('programs', this)">
+      <span class="icon">📋</span>Programs
+    </button>
+    <button onclick="showPage('workout', this)">
+      <span class="icon">▶️</span>Workout
+    </button>
+  </nav>
+
+  <!-- =============================================
+       EXERCISE PICKER MODAL
+       Opens when user taps "Edit" on a program.
+  ============================================= -->
+  <div class="modal-overlay" id="picker-modal" onclick="closePickerOnBg(event)">
+    <div class="modal">
+      <h2 class="modal-title" id="picker-title">Select Exercises</h2>
+      <div class="modal-scroll">
+        <div id="picker-list" class="check-list">
+          <!-- checkboxes injected by JS -->
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closePicker()">Cancel</button>
+        <button class="btn-primary" onclick="savePicker()">Save</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============================================
+       JAVASCRIPT
+  ============================================= -->
+  <script>
+    /* =============================================
+       STATE
+       All data lives here during runtime.
+       Persisted to localStorage on every change.
+    ============================================= */
+    let state = {
+      exercises: [],    // [{ id, name }]
+      programs:  [],    // [{ id, name, exerciseIds: [] }]
+      activeWorkout: {  // currently running workout
+        programId: null,
+        checked: {}     // { exerciseId: true/false }
+      }
+    };
+
+    /* =============================================
+       STORAGE HELPERS
+    ============================================= */
+    const STORAGE_KEY = 'lift_app_v1';
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try { state = JSON.parse(raw); }
+        catch (e) { /* ignore corrupt data */ }
+      }
+    }
+
+    /* Generate a simple unique id */
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    /* =============================================
+       NAVIGATION — show/hide pages
+    ============================================= */
+    function showPage(name, btn) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    /* =============================================
+       EXERCISES
+    ============================================= */
+
+    /* Add a new exercise */
+    function addExercise() {
+      const input = document.getElementById('exercise-input');
+      const name = input.value.trim();
+      if (!name) return;
+
+      state.exercises.push({ id: uid(), name });
+      input.value = '';
+      saveState();
+      renderExercises();
+    }
+
+    /* Allow pressing Enter to add */
+    document.getElementById('exercise-input')
+      .addEventListener('keydown', e => { if (e.key === 'Enter') addExercise(); });
+
+    /* Delete an exercise (also removes it from all programs) */
+    function deleteExercise(id) {
+      state.exercises = state.exercises.filter(e => e.id !== id);
+      // clean up from programs
+      state.programs.forEach(p => {
+        p.exerciseIds = p.exerciseIds.filter(eid => eid !== id);
+      });
+      saveState();
+      renderExercises();
+      renderPrograms();
+    }
+
+    /* Render the exercise list */
+    function renderExercises() {
+      const list = document.getElementById('exercise-list');
+
+      if (state.exercises.length === 0) {
+        list.innerHTML = `<div class="empty"><span>🏋️</span>No exercises yet.<br>Add one above.</div>`;
+        return;
+      }
+
+      list.innerHTML = state.exercises.map(ex => `
+        <div class="item-card">
+          <span class="item-name">${escHtml(ex.name)}</span>
+          <button class="btn-delete" onclick="deleteExercise('${ex.id}')" title="Delete">✕</button>
+        </div>
+      `).join('');
+    }
+
+    /* =============================================
+       PROGRAMS
+    ============================================= */
+
+    /* Add a new program */
+    function addProgram() {
+      const input = document.getElementById('program-input');
+      const name = input.value.trim();
+      if (!name) return;
+
+      state.programs.push({ id: uid(), name, exerciseIds: [] });
+      input.value = '';
+      saveState();
+      renderPrograms();
+    }
+
+    document.getElementById('program-input')
+      .addEventListener('keydown', e => { if (e.key === 'Enter') addProgram(); });
+
+    /* Delete a program */
+    function deleteProgram(id) {
+      state.programs = state.programs.filter(p => p.id !== id);
+      // if active workout used this program, clear it
+      if (state.activeWorkout.programId === id) {
+        state.activeWorkout = { programId: null, checked: {} };
+      }
+      saveState();
+      renderPrograms();
+    }
+
+    /* Render the program list */
+    function renderPrograms() {
+      const list = document.getElementById('program-list');
+
+      if (state.programs.length === 0) {
+        list.innerHTML = `<div class="empty"><span>📋</span>No programs yet.<br>Add one above.</div>`;
+        return;
+      }
+
+      list.innerHTML = state.programs.map(prog => {
+        const count = prog.exerciseIds.length;
+        const label = count === 1 ? '1 exercise' : `${count} exercises`;
+        return `
+          <div class="program-card">
+            <div class="prog-info">
+              <div class="prog-name">${escHtml(prog.name)}</div>
+              <div class="prog-count">${label}</div>
+            </div>
+            <div class="prog-actions">
+              <button class="btn-ghost" style="padding:0 12px;font-size:0.8rem;"
+                onclick="openPicker('${prog.id}')">Edit</button>
+              <button class="btn-start"
+                onclick="startWorkout('${prog.id}')">Start ▶</button>
+              <button class="btn-delete" onclick="deleteProgram('${prog.id}')">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* =============================================
+       EXERCISE PICKER MODAL
+       Lets the user assign exercises to a program.
+    ============================================= */
+    let pickerProgramId = null;  // which program we're editing
+
+    function openPicker(programId) {
+      pickerProgramId = programId;
+      const prog = state.programs.find(p => p.id === programId);
+      document.getElementById('picker-title').textContent = `Exercises for "${prog.name}"`;
+
+      // Build checkbox list from the exercise library
+      const pickerList = document.getElementById('picker-list');
+
+      if (state.exercises.length === 0) {
+        pickerList.innerHTML = `<div class="empty" style="padding:20px 0">
+          <span>🏋️</span>Add exercises first in the Exercises tab.
+        </div>`;
+      } else {
+        pickerList.innerHTML = state.exercises.map(ex => {
+          const checked = prog.exerciseIds.includes(ex.id);
+          return `
+            <label class="check-item ${checked ? 'selected' : ''}" id="ci-${ex.id}">
+              <input type="checkbox" value="${ex.id}" ${checked ? 'checked' : ''}
+                onchange="togglePickerItem(this, '${ex.id}')" />
+              <span>${escHtml(ex.name)}</span>
+            </label>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('picker-modal').classList.add('open');
+    }
+
+    /* Visual highlight when checkbox changes */
+    function togglePickerItem(checkbox, exId) {
+      const label = document.getElementById('ci-' + exId);
+      label.classList.toggle('selected', checkbox.checked);
+    }
+
+    function closePicker() {
+      document.getElementById('picker-modal').classList.remove('open');
+      pickerProgramId = null;
+    }
+
+    /* Close modal if user taps the dark overlay */
+    function closePickerOnBg(event) {
+      if (event.target === document.getElementById('picker-modal')) closePicker();
+    }
+
+    /* Save selected exercises back to the program */
+    function savePicker() {
+      const prog = state.programs.find(p => p.id === pickerProgramId);
+      const checkboxes = document.querySelectorAll('#picker-list input[type="checkbox"]');
+      prog.exerciseIds = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+
+      // If this is the current active workout, reset its checked state
+      if (state.activeWorkout.programId === prog.id) {
+        state.activeWorkout.checked = {};
+      }
+
+      saveState();
+      renderPrograms();
+      closePicker();
+    }
+
+    /* =============================================
+       WORKOUT VIEW
+    ============================================= */
+
+    /* Launch a workout for the given program */
+    function startWorkout(programId) {
+      // Reset checked state for a fresh start
+      state.activeWorkout = { programId, checked: {} };
+      saveState();
+      // Switch to workout tab (simulate clicking the nav button)
+      const workoutBtn = document.querySelectorAll('nav button')[2];
+      showPage('workout', workoutBtn);
+      renderWorkout();
+    }
+
+    /* Reset all checkboxes without changing the program */
+    function resetWorkout() {
+      state.activeWorkout.checked = {};
+      saveState();
+      renderWorkout();
+    }
+
+    /* Toggle one exercise's checked state */
+    function toggleExercise(exerciseId) {
+      const cur = state.activeWorkout.checked[exerciseId] || false;
+      state.activeWorkout.checked[exerciseId] = !cur;
+      saveState();
+      renderWorkout();
+    }
+
+    /* Render the workout checklist */
+    function renderWorkout() {
+      const placeholder = document.getElementById('workout-placeholder');
+      const content     = document.getElementById('workout-content');
+
+      const { programId, checked } = state.activeWorkout;
+
+      if (!programId) {
+        placeholder.style.display = 'block';
+        content.style.display = 'none';
+        return;
+      }
+
+      const prog = state.programs.find(p => p.id === programId);
+      if (!prog) {
+        // Program was deleted — clear active workout
+        state.activeWorkout = { programId: null, checked: {} };
+        saveState();
+        renderWorkout();
+        return;
+      }
+
+      placeholder.style.display = 'none';
+      content.style.display = 'block';
+
+      // Set title
+      document.getElementById('workout-name').textContent = prog.name;
+
+      // Resolve exercise objects (skip any that were deleted from the library)
+      const exercises = prog.exerciseIds
+        .map(id => state.exercises.find(e => e.id === id))
+        .filter(Boolean);
+
+      const total = exercises.length;
+      const doneCount = exercises.filter(ex => checked[ex.id]).length;
+
+      // Update progress
+      const pct = total === 0 ? 0 : Math.round((doneCount / total) * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-label').textContent =
+        `${doneCount} / ${total} done`;
+
+      // Render checklist rows
+      const list = document.getElementById('workout-list');
+
+      if (exercises.length === 0) {
+        list.innerHTML = `<div class="empty"><span>📋</span>No exercises in this program.<br>Go to Programs → Edit to add some.</div>`;
+      } else {
+        list.innerHTML = exercises.map(ex => {
+          const done = checked[ex.id] || false;
+          return `
+            <div class="exercise-row ${done ? 'done' : ''}" onclick="toggleExercise('${ex.id}')">
+              <div class="ex-check">${done ? '✓' : ''}</div>
+              <span class="ex-name">${escHtml(ex.name)}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Show/hide completion banner
+      const banner = document.getElementById('done-banner');
+      banner.classList.toggle('show', total > 0 && doneCount === total);
+    }
+
+    /* =============================================
+       UTILITY
+    ============================================= */
+
+    /* Escape HTML to prevent XSS from user-typed names */
+    function escHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /* =============================================
+       BOOT — load saved state, seed defaults if
+       first launch, then render all views.
+    ============================================= */
+    function init() {
+      loadState();
+
+      // Seed example exercises on first launch
+      if (state.exercises.length === 0) {
+        const defaults = ['Deadlift','Squat','Bench Press','Shoulder Press','Pull-ups',
+                          'Triceps Pushdown','Barbell Row','Lunges'];
+        defaults.forEach(name => state.exercises.push({ id: uid(), name }));
+        saveState();
+      }
+
+      renderExercises();
+      renderPrograms();
+      renderWorkout();
+    }
+
+    init();
+
+    /* =============================================
+       PWA MANIFEST — injected as a blob so the
+       entire app stays a single HTML file.
+       This enables "Add to Home Screen" prompts
+       and proper standalone mode on Android.
+    ============================================= */
+    (function injectManifest() {
+      const manifest = {
+        name: "LIFT — Workout Checklist",
+        short_name: "LIFT",
+        start_url: ".",
+        display: "standalone",
+        background_color: "#0d0d12",
+        theme_color: "#0d0d12",
+        orientation: "portrait",
+        icons: [
+          {
+            src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjM2IiBmaWxsPSIjMGQwZDEyIi8+PHJlY3QgeD0iMjAiIHk9Ijc4IiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjgiIHJ4PSI0IiBmaWxsPSIjN2VmMGM4IiBvcGFjaXR5PSIwLjMiLz48dGV4dCB4PSI5MCIgeT0iMTE0IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iNjAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM3ZWYwYzgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSI2Ij5MSUZUPC90ZXh0Pjwvc3ZnPg==",
+            sizes: "180x180",
+            type: "image/svg+xml"
+          }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel  = 'manifest';
+      link.href = url;
+      document.head.appendChild(link);
+    })();
+  </script>
+</body>
+</html>
